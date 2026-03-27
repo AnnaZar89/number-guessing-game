@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <pre>{{ logo }}</pre>
+    <div>Welcome to the Number Guessing Game! I'm thinking of a number between 1 and 100. Choose the difficulty level:</div>
+
+    <button onClick="startGame('easy')">Easy</button>
+    <button onClick="startGame('hard')">Hard</button>
+
+    <p id="difficulty-info"></p>
+    <div>Choose the number:</div>
+
+    <input type="number" id="guess-input" min="1" max="100">
+    <button onClick="makeGuess()">Guess</button>
+    <p id="attempts-info"></p>
+    <p id="message"></p>
+
+    <script>
+        const startGame = (level) => {
+            const formData = new FormData();
+            formData.append("difficulty", level);
+            fetch("/start", {
+                method: "POST",
+                body: formData
+            })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("difficulty-info").textContent = `Chosen difficulty: ${data.level_chosen}. You have ${data.num_of_guess} attempts.`
+        })
+
+        }
+
+
+        const makeGuess = () => {
+            const userGuess = document.getElementById("guess-input").value
+            const formData = new FormData();
+            formData.append("guess", userGuess);
+            fetch("/guess", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("message").textContent = data.message;
+                document.getElementById("attempts-info").textContent =`You have ${data.num_of_guess} attempts remaining to guess a number.`
+            })
+
+        }
+    </script>
+</body>
+</html>
