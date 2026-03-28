@@ -3,8 +3,7 @@
 A number guessing game built with Python and Flask. The computer picks a random number between 1 and 100 — guess it before running out of attempts.
 
 ## Demo
-
-TBA
+Demo [here](https://number-guessing-game-production-ed10.up.railway.app/)
 
 ## Features
 
