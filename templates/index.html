@@ -12,15 +12,24 @@
     <button onClick="startGame('hard')">Hard</button>
 
     <p id="difficulty-info"></p>
-    <div>Choose the number:</div>
+    <div id="number-field" style="display:none">
+        <div>Choose the number:</div>
 
-    <input type="number" id="guess-input" min="1" max="100">
-    <button onClick="makeGuess()">Guess</button>
-    <p id="attempts-info"></p>
-    <p id="message"></p>
-
+        <input type="number" id="guess-input" min="1" max="100">
+        <button onClick="makeGuess()" id="btn-guess">Guess</button>
+        <p id="attempts-info"></p>
+        <p id="message"></p>
+        <button id="play-again" style="display:none" onclick="resetGame()">Play again</button>
+    </div>
     <script>
+        const btnGuess = document.getElementById("btn-guess");
+        const playAgain = document.getElementById("play-again");
+        const numberField = document.getElementById("number-field");
+        let currentLevel = "";
+
+
         const startGame = (level) => {
+            currentLevel = level;
             const formData = new FormData();
             formData.append("difficulty", level);
             fetch("/start", {
@@ -29,11 +38,21 @@
             })
         .then(response => response.json())
         .then(data => {
-            document.getElementById("difficulty-info").textContent = `Chosen difficulty: ${data.level_chosen}. You have ${data.num_of_guess} attempts.`
+            document.getElementById("difficulty-info").textContent = `Chosen difficulty: ${data.level_chosen}. You have ${data.num_of_guess} attempts in total.`
+            numberField.style.display = "block";
         })
 
         }
 
+        const resetGame = () => {
+            document.getElementById("message").textContent = "";
+            document.getElementById("attempts-info").textContent = "";
+            document.getElementById("difficulty-info").textContent = "";
+            document.getElementById("guess-input").value = "";
+            btnGuess.disabled = false;
+            playAgain.style.display = "none";
+            numberField.style.display = "none";
+        }
 
         const makeGuess = () => {
             const userGuess = document.getElementById("guess-input").value
@@ -47,6 +66,10 @@
             .then(data => {
                 document.getElementById("message").textContent = data.message;
                 document.getElementById("attempts-info").textContent =`You have ${data.num_of_guess} attempts remaining to guess a number.`
+            if (data.num_of_guess <= 0 || data.message.includes("Guessed")) {
+                btnGuess.disabled = true;
+                playAgain.style.display = "block";
+            }
             })
 
         }
